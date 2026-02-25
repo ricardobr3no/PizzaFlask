@@ -1,5 +1,5 @@
-import os
 import logging
+import os
 
 from dotenv import load_dotenv
 from flask import Flask
@@ -13,11 +13,11 @@ from .routes.pedido_routes import pedidos_bp
 
 
 class Application:
-    def __init__(self, force=False) -> None:
+    def __init__(self) -> None:
         # criar app
         self.app = Flask(__name__)
         # configuracoes
-        self._configurar_database(force)
+        self._configurar_database(force=True)
         self.configurar_rotas_bp(clientes_bp, pedidos_bp, itens_bp, url_prefix="")
         # cofigurar cors
         CORS(self.app)
@@ -33,8 +33,10 @@ class Application:
             if force:
                 logging.warning("Resetando as tabelas (force=True)...")
                 db.drop_all()
+                db.session.commit()
 
             db.create_all()
+            db.session.commit()
 
     def configurar_rotas_bp(self, *rotas_bp: Blueprint, url_prefix=""):
         # adiciona blueprint das rotas
@@ -47,5 +49,5 @@ class Application:
 
 if __name__ == "__main__":
     load_dotenv()
-    app = Application(force=False)
+    app = Application()
     app.run()

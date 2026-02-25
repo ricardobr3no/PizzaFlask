@@ -14,8 +14,21 @@ def get_all_pedidos():
     return jsonify([pedido.to_dict() for pedido in pedidos])
 
 
+@pedidos_bp.route('/pedidos/<int:pedido_id>', methods=['GET'])
+def get_pedido(pedido_id: int):
+    pedido = pedido_controller.get_by_id(pedido_id)
+    return jsonify(pedido.to_dict())
+
+
 @pedidos_bp.route('/pedidos', methods=['POST'])
 def create_pedido():
     data = request.get_json()
     pedido = pedido_controller.create(data)
     return jsonify(pedido.to_dict()), 201
+
+
+@pedidos_bp.route('/pedidos/<int:pedido_id>', methods=['PUT'])
+def update_pedido(pedido_id: int):
+    data = request.get_json()
+    pedido = pedido_controller.adicionar_item(data, pedido_id)
+    return jsonify(pedido), 201
