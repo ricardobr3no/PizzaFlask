@@ -66,7 +66,7 @@ class Pedido(db.Model):
     # columns
     id = db.Column(db.Integer, primary_key=True)
     cliente_id = db.Column(db.Integer, db.ForeignKey("cliente.id"), nullable=False)
-    data = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    data = db.Column(db.DateTime, nullable=False, default=datetime.now())
 
     # Um pedido tem vários itens através da tabela ItemPedido
     cliente = db.relationship("Cliente", back_populates="pedidos")
@@ -75,7 +75,7 @@ class Pedido(db.Model):
     )
 
     def to_dict(self):
-        lista_itens = [i.to_dict() for i in self.itens]
+        lista_itens = [i.to_dict() for i in self.itens]  
         return {
             "id": self.id,
             "cliente": self.cliente.nome if self.cliente else "N/A",

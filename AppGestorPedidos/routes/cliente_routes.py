@@ -24,3 +24,17 @@ def create_client():
     return jsonify(
         {"message": "Client created successfully", "cliente": novo_cliente.to_dict()}
     ), 201
+
+
+@clientes_bp.route("/clientes/<int:id>", methods=["PUT"])
+def update_cliente_by_id(id: int, data: dict):
+    cliente_atualizado = client_controller.update(id, data)
+    return cliente_atualizado, 201
+
+
+@clientes_bp.route("/clientes/<int:id>", methods=["DELETE"])
+def delete_cliente_by_id(id: int):
+    deleted = client_controller.delete(id)
+    if deleted:
+        return jsonify({"message": "Cliente deletado com sucesso!"}), 200
+    return jsonify({"message": "Client not found"}), 404
