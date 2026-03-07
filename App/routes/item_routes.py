@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
 
-from AppGestorPedidos.routes.pedido_routes import pedido_controller
+from App.routes.pedido_routes import pedido_controller
 
 from ..controllers.item_controller import ItemController
 
