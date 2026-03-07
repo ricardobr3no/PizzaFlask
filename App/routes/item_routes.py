@@ -12,7 +12,7 @@ item_controller = ItemController()
 
 @itens_bp.route("/itens", methods=["GET"])
 def get_all_orders():
-    orders = item_controller.get_all()
+    itens = item_controller.get_all()
     return jsonify([order.to_dict() for order in orders])
 
 
@@ -33,7 +33,7 @@ def create_order():
 
 @itens_bp.route("/itens/<int:id>", methods=["PUT"])
 def update_order(id: int, data: dict):
-    order = item_controller.update(id, data)
+    item = item_controller.update(id, data)
     return order, 201
 
 

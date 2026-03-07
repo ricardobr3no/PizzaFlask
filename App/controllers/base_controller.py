@@ -1,12 +1,13 @@
+from abc import ABC
 from flask import abort
 from flask_sqlalchemy import SQLAlchemy
 
 from ..models import db
 
 
-class BaseController:
+class BaseController(ABC):
     def __init__(self, model):
-        self.model = model
+        self.model: db.Model = model
         self.db: SQLAlchemy = db
 
     def get_all(self):
@@ -19,6 +20,23 @@ class BaseController:
         if not record:
             abort(404, description=f"{self.model.__name__} não encontrado.")
         return record
+
+    def query(self, filters: dict):
+        """
+        Busca registros baseados em campos dinâmicos.
+        Ex: buscar(email="joao@pizzaria.com") ou buscar(nome="Margherita")
+        """
+        # Filtra o dicionário: mantém apenas o que é coluna no banco
+        valid_filters = {k: v for k, v in filters.items() if hasattr(self.model, k)}
+        # O filter_by aceita o desempacotamento de dicionário (**)
+        return self.model.query.filter_by(**valid_filters).first()
+
+    def query_all(self, filters: dict):
+        """Retorna uma lista de todos os registros que coincidem com o filtro."""
+        # Filtra o dicionário: mantém apenas o que é coluna no banco
+        valid_filters = {k: v for k, v in filters.items() if hasattr(self.model, k)}
+        # O filter_by aceita o desempacotamento de dicionário (**)
+        return self.model.query.filter_by(**valid_filters).all()
 
     def create(self, data: dict):
         """Cria um novo registro no banco de dados."""

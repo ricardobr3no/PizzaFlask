@@ -10,6 +10,7 @@ class Cliente(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(80), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
+    senha = db.Column(db.String(40), nullable=False)
 
     # Um cliente pode ter vários pedidos
     pedidos = db.relationship(
@@ -41,7 +42,7 @@ class Item(db.Model):
 class ItemPedido(db.Model):
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
-        
+
     __tablename__ = "item_pedido"
     # columns
     id = db.Column(db.Integer, primary_key=True)
@@ -77,7 +78,7 @@ class Pedido(db.Model):
     )
 
     def to_dict(self):
-        lista_itens = [i.to_dict() for i in self.itens]  
+        lista_itens = [i.to_dict() for i in self.itens]
         return {
             "id": self.id,
             "cliente": self.cliente.nome if self.cliente else "N/A",

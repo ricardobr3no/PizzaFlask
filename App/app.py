@@ -9,6 +9,7 @@ from .models import db
 from .routes.cliente_routes import clientes_bp
 from .routes.item_routes import itens_bp
 from .routes.pedido_routes import pedidos_bp
+from .routes.login_cadastro_routes import login_cadastro_bp
 
 
 class Application:
@@ -16,10 +17,12 @@ class Application:
         # criar app
         self.app = Flask(__name__)
         # configuracoes
-        self._configurar_database(force=False)
+        self._configurar_database(force=True)
+        # rotas da api
         self._configurar_rotas_bp(clientes_bp, pedidos_bp, itens_bp, url_prefix="/api")
-        self._configurar_rotas_frontend()
-        
+        # rotas da aplicacao
+        self._configurar_rotas_bp(login_cadastro_bp, url_prefix="")
+
         # cofigurar cors
         CORS(self.app)
 
@@ -39,36 +42,9 @@ class Application:
             db.session.commit()
 
     def _configurar_rotas_bp(self, *rotas_bp: Blueprint, url_prefix=""):
-        # rota inicial
-        @self.app.route(url_prefix, methods=["GET"])
-        def home_api():
-            return "Welcome to the Pizza Flask API!"
         # adiciona blueprint das rotas
         for rota_bp in rotas_bp:
             self.app.register_blueprint(rota_bp, url_prefix=url_prefix)
-            
-    
-    def _configurar_rotas_frontend(self):
-        # rota inicial
-        @self.app.route("/login", methods=["GET"])
-        def index():
-            return render_template("login.html")
-            
-        @self.app.route("/login", methods=["POST"])
-        def login():
-            # pegar dados do formulario
-            nome = request.form.get("nome")
-            email = request.form.get("email")
-            # logica de verificacao do banco de dados
-            return "Login realizado com sucesso!"
-            
-        @self.app.route("/cadastro", methods=["POST"])
-        def cadastro():
-            # pegar dados do formulario
-            nome = request.form.get("nome")
-            email = request.form.get("email")
-            # logica para cadastro do banco de dados
-            return "Cadastro realizado com sucesso!"
 
     def run(self, port=None, debug=True):
         self.app.run(port=5000 if not port else port, debug=debug)
