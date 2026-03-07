@@ -1,5 +1,5 @@
 from dotenv import load_dotenv
-from App.app import App
+from app.app import App
 
 if __name__ == "__main__":
     load_dotenv()

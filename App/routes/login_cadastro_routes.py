@@ -1,5 +1,4 @@
 from flask import Blueprint, jsonify, request, render_template
-
 from ..controllers.cliente_controller import ClienteController
 
 # criamos blueprint para login

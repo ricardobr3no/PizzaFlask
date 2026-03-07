@@ -12,7 +12,7 @@ from .routes.pedido_routes import pedidos_bp
 from .routes.login_cadastro_routes import login_cadastro_bp
 
 
-class Application:
+class App:
     def __init__(self) -> None:
         # criar app
         self.app = Flask(__name__)
@@ -52,5 +52,5 @@ class Application:
 
 if __name__ == "__main__":
     load_dotenv()
-    app = Application()
+    app = App()
     app.run()
