@@ -2,27 +2,24 @@ import logging
 import os
 
 from dotenv import load_dotenv
+from sqlalchemy import text
 from flask import Blueprint, Flask, render_template, request
 from flask_cors import CORS
 
 from .models import db
 
-from .routes.cliente_routes import clientes_bp
-from .routes.item_routes import itens_bp
-from .routes.pedido_routes import pedidos_bp
 from .routes.login_cadastro_routes import login_cadastro_bp
+from .routes.home_routes import home_bp
 
 
 class App:
-    def __init__(self) -> None:
+    def __init__(self, force=False) -> None:
         # criar app
         self.app = Flask(__name__)
         # configuracoes
-        self._configurar_database(force=False)
-        # rotas da api
-        self._configurar_rotas_bp(clientes_bp, pedidos_bp, itens_bp, url_prefix="/api")
+        self._configurar_database(force)
         # rotas da aplicacao
-        self._configurar_rotas_bp(login_cadastro_bp, url_prefix="")
+        self._configurar_rotas_bp(login_cadastro_bp, home_bp, url_prefix="")
 
         # cofigurar cors
         CORS(self.app)
@@ -35,6 +32,7 @@ class App:
         # Cria as tabelas antes da primeira requisição
         with self.app.app_context():
             if force:
+                # apaga todas as tabelas
                 logging.warning("Resetando as tabelas (force=True)...")
                 db.drop_all()
                 db.session.commit()
@@ -53,5 +51,5 @@ class App:
 
 if __name__ == "__main__":
     load_dotenv()
-    app = App()
+    app = App(force=False)
     app.run()

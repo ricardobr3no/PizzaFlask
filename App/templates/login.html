@@ -30,6 +30,13 @@
 
         <!-- formulario login-->
         <div id="login-form">
+
+        {% if erro %}
+        <div class="alert alert-danger text-center p-2 mb-3" role="alert">
+          {{ erro }}
+        </div>
+
+        {% endif %}
           <h4 class="text-center mb-3">Bem-vindo de volta!</h4>
           <form action="/login" method="POST">
             <div class="mb-3">
