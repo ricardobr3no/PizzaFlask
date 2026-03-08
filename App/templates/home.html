@@ -1,208 +1,127 @@
 <!doctype html>
 <html lang="pt-br">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Burger Tech | Cardápio</title>
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Bangers&family=Roboto:wght@400;700&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
-    />
-    <link
-      href="{{ url_for('static', filename='css/site.css') }}"
-      rel="stylesheet"
-    />
-  </head>
 
-  <body>
-    <nav
-      class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-secondary shadow-sm sticky-top"
-    >
-      <div class="container">
-        <a class="navbar-brand brand-font m-0" href="#" style="font-size: 2rem"
-          >BURGER TECH</a
-        >
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Burger Tech | Cardápio</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Roboto:wght@400;700&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
+  <link href="{{ url_for('static', filename='css/site.css') }}" rel="stylesheet" />
+</head>
 
-        <div class="d-flex align-items-center">
-          <span class="me-3 d-none d-md-inline text-light small"
-            >Olá, {{ nome_usuario | default('Dev') }}!</span
-          >
-          <button
-            class="btn btn-outline-warning position-relative"
-            type="button"
-            data-bs-toggle="offcanvas"
-            data-bs-target="#carrinhoLateral"
-            aria-controls="carrinhoLateral"
-          >
-            <i class="bi bi-cart-fill"></i> Carrinho
-            <span
-              class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-            >
-              2
-            </span>
-          </button>
-        </div>
-      </div>
-    </nav>
+<body>
+  <!-- navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-secondary shadow-sm sticky-top">
+    <div class="container">
+      <a class="navbar-brand brand-font m-0" href="#" style="font-size: 2rem">BURGER TECH</a>
 
-    <div class="container my-5">
-      <div class="text-center mb-5">
-        <h2 class="brand-font" style="font-size: 3rem">Nosso Cardápio</h2>
-        <p class="text-secondary">
-          Escolha os componentes para montar sua fome!
-        </p>
-      </div>
+      <div class="d-flex align-items-center">
+        <span class="me-3 d-none d-md-inline text-light small">Olá, {{ nome_usuario | default('Dev') }}!</span>
 
-      <div class="row g-4">
-        <div class="col-12 col-md-6 col-lg-4">
-          <div class="card product-card h-100 p-3 shadow">
-            <div
-              class="bg-dark rounded mb-3 d-flex align-items-center justify-content-center border border-secondary"
-              style="height: 200px"
-            >
-              <i class="bi bi-image text-secondary" style="font-size: 3rem"></i>
-            </div>
-            <div class="card-body p-0 d-flex flex-column">
-              <h5 class="card-title text-warning fw-bold">Byte Burger</h5>
-              <p class="card-text small text-light flex-grow-1">
-                Pão brioche, blend bovino 180g, queijo cheddar derretido, cebola
-                caramelizada e molho da casa.
-              </p>
-              <div
-                class="d-flex justify-content-between align-items-center mt-3"
-              >
-                <h4 class="m-0">R$ 35,00</h4>
-                <button class="btn btn-warning btn-sm">Adicionar</button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <button class="btn btn-outline-warning position-relative" type="button" data-bs-toggle="offcanvas"
+          data-bs-target="#carrinhoLateral" aria-controls="carrinhoLateral">
+          <i class="bi bi-cart-fill"></i> Carrinho
+          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+            {{ quantidade_itens }}
+          </span>
+        </button>
 
-        <div class="col-12 col-md-6 col-lg-4">
-          <div class="card product-card h-100 p-3 shadow">
-            <div
-              class="bg-dark rounded mb-3 d-flex align-items-center justify-content-center border border-secondary"
-              style="height: 200px"
-            >
-              <i class="bi bi-image text-secondary" style="font-size: 3rem"></i>
-            </div>
-            <div class="card-body p-0 d-flex flex-column">
-              <h5 class="card-title text-warning fw-bold">Megabyte Duplo</h5>
-              <p class="card-text small text-light flex-grow-1">
-                Pão australiano, 2x blends 180g, dobro de bacon, queijo prato e
-                molho barbecue.
-              </p>
-              <div
-                class="d-flex justify-content-between align-items-center mt-3"
-              >
-                <h4 class="m-0">R$ 48,00</h4>
-                <button class="btn btn-warning btn-sm">Adicionar</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-12 col-md-6 col-lg-4">
-          <div class="card product-card h-100 p-3 shadow">
-            <div
-              class="bg-dark rounded mb-3 d-flex align-items-center justify-content-center border border-secondary"
-              style="height: 200px"
-            >
-              <i class="bi bi-image text-secondary" style="font-size: 3rem"></i>
-            </div>
-            <div class="card-body p-0 d-flex flex-column">
-              <h5 class="card-title text-warning fw-bold">
-                Batata Frita (Módulo RAM)
-              </h5>
-              <p class="card-text small text-light flex-grow-1">
-                Porção de 400g de batata frita rústica com páprica e maionese
-                verde à parte.
-              </p>
-              <div
-                class="d-flex justify-content-between align-items-center mt-3"
-              >
-                <h4 class="m-0">R$ 18,00</h4>
-                <button class="btn btn-warning btn-sm">Adicionar</button>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
+  </nav>
 
-    <div
-      class="offcanvas offcanvas-end bg-dark border-start border-secondary"
-      tabindex="-1"
-      id="carrinhoLateral"
-      aria-labelledby="carrinhoLabel"
-    >
-      <div class="offcanvas-header border-bottom border-secondary">
-        <h5
-          class="offcanvas-title brand-font text-warning"
-          id="carrinhoLabel"
-          style="font-size: 2rem"
-        >
-          Seu Carrinho
-        </h5>
-        <button
-          type="button"
-          class="btn-close btn-close-white"
-          data-bs-dismiss="offcanvas"
-          aria-label="Close"
-        ></button>
-      </div>
-      <div class="offcanvas-body d-flex flex-column">
-        <div class="flex-grow-1">
-          <div
-            class="cart-item d-flex justify-content-between align-items-center py-3 border-bottom border-secondary"
-          >
-            <div>
-              <h6 class="m-0 fw-bold">1x Byte Burger</h6>
-              <small class="text-secondary">Sem cebola</small>
-            </div>
-            <div class="text-end">
-              <p class="m-0">R$ 35,00</p>
-              <a href="#" class="text-danger small text-decoration-none"
-                >Remover</a
-              >
-            </div>
-          </div>
-
-          <div
-            class="cart-item d-flex justify-content-between align-items-center py-3 border-bottom border-secondary"
-          >
-            <div>
-              <h6 class="m-0 fw-bold">1x Batata Frita</h6>
-            </div>
-            <div class="text-end">
-              <p class="m-0">R$ 18,00</p>
-              <a href="#" class="text-danger small text-decoration-none"
-                >Remover</a
-              >
-            </div>
-          </div>
-        </div>
-
-        <div class="mt-4 pt-3 border-top border-secondary">
-          <div class="d-flex justify-content-between mb-3">
-            <span class="fs-5">Total:</span>
-            <span class="fs-5 fw-bold text-warning">R$ 53,00</span>
-          </div>
-          <button class="btn btn-warning w-100 py-2 fs-5">
-            Finalizar Pedido
-          </button>
-        </div>
-      </div>
+  <div class="container my-5">
+    <div class="text-center mb-5">
+      <h2 class="brand-font" style="font-size: 3rem">Nosso Cardápio</h2>
+      <p class="text-secondary">
+        Escolha os componentes para montar sua fome!
+      </p>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  </body>
+    <div class="row g-4">
+      <!--lista de produtos-->
+      {% for produto in produtos %}
+      <div class="col-12 col-md-6 col-lg-4">
+        <div class="card product-card h-100 p-3 shadow">
+          <div class="bg-dark rounded mb-3 d-flex align-items-center justify-content-center border border-secondary"
+            style="height: 200px">
+            <i class="bi bi-image text-secondary" style="font-size: 3rem"></i>
+          </div>
+          <div class="card-body p-0 d-flex flex-column">
+            <h5 class="card-title text-warning fw-bold">
+              {{ produto.nome }}
+            </h5>
+            <p class="card-text small text-light flex-grow-1">
+              {{ produto.descricao }}
+            </p>
+
+            <!--- button -->
+            <form action="{{ url_for('home.adicionar_carrinho', item_id=produto.id) }}" method="POST">
+              <button type="submit" class="btn btn-warning btn-sm">
+                Adicionar
+              </button>
+            </form>
+
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!--barra lateral-->
+  <div class="offcanvas offcanvas-end bg-dark border-start border-secondary" tabindex="-1" id="carrinhoLateral"
+    aria-labelledby="carrinhoLabel">
+    <div class="offcanvas-header border-bottom border-secondary">
+      <h5 class="offcanvas-title brand-font text-warning" id="carrinhoLabel" style="font-size: 2rem">
+        Seu Carrinho
+      </h5>
+      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+
+    <div class="offcanvas-body d-flex flex-column">
+      <!--items do carrinho-->
+      {% for item_pedido in itens_carrinho %}
+      <div class="flex-grow-1">
+        <div class="cart-item d-flex justify-content-between align-items-center py-3 border-bottom border-secondary">
+          <h6 class="m-0 fw-bold">
+            {{ item_pedido.quantidade }}x {{ item_pedido.item.nome }}
+          </h6>
+        </div>
+        <div class="text-end">
+          <p class="m-0">R$ {{ item_pedido.subtotal }}</p>
+
+          <form action="{{ url_for('home.remover_carrinho', item_pedido_id=item_pedido.id) }}" method="POST"
+            class="d-inline">
+            <button type="submit"
+              class="btn btn-link text-danger small text-decoration-none p-0 border-0 m-0">Remover</button>
+          </form>
+
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!---total e finalizar-->
+    <div class="mt-4 pt-3 border-top border-secondary">
+      <div class="d-flex justify-content-between mb-3">
+        <span class="fs-5">Total:</span>
+        <span class="fs-5 fw-bold text-warning">R$ {{ "%.2f"|format(total_carrinho)|replace('.', ',') }}</span>
+      </div>
+
+      <form action="{{ url_for('home.finalizar_pedido') }}" method="POST">
+        <button type="submit" class="btn btn-warning w-100 py-2 fs-5" {% if not itens_carrinho %}disabled{% endif %}>
+          Finalizar Pedido
+        </button>
+      </form>
+    </div>
+  </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
 </html>

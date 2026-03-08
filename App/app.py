@@ -10,16 +10,21 @@ from .models import db
 
 from .routes.login_cadastro_routes import login_cadastro_bp
 from .routes.home_routes import home_bp
+from .routes.admin_routes import admin_bp
 
 
 class App:
     def __init__(self, force=False) -> None:
         # criar app
         self.app = Flask(__name__)
+        # Adicione uma chave secreta para as sessões funcionarem (segurança)
+        self.app.secret_key = os.getenv("SECRET_KEY", "super_senha_secreta_123")
         # configuracoes
         self._configurar_database(force)
-        # rotas da aplicacao
+        # rotas da aplicacao principal (Home e Login ficam na raiz)
         self._configurar_rotas_bp(login_cadastro_bp, home_bp, url_prefix="")
+        # rota do administrador (Forçamos o prefixo correto aqui)
+        self._configurar_rotas_bp(admin_bp, url_prefix="/admin")
 
         # cofigurar cors
         CORS(self.app)
@@ -37,6 +42,8 @@ class App:
                 db.drop_all()
                 db.session.commit()
 
+            # criar tabelas
+            logging.warning("Criando tabelas...")
             db.create_all()
             db.session.commit()
 
@@ -51,5 +58,5 @@ class App:
 
 if __name__ == "__main__":
     load_dotenv()
-    app = App(force=False)
+    app = App(force=True)
     app.run()

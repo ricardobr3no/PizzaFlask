@@ -10,7 +10,7 @@ class BaseController(ABC):
         self.model: db.Model = model
         self.db: SQLAlchemy = db
 
-    def get_all(self):
+    def get_all(self) -> list:
         """Retorna todos os registros do modelo."""
         return self.model.query.all()
 
@@ -31,7 +31,7 @@ class BaseController(ABC):
         # O filter_by aceita o desempacotamento de dicionário (**)
         return self.model.query.filter_by(**valid_filters).first()
 
-    def query_all(self, filters: dict):
+    def query_all(self, filters: dict) -> list:
         """Retorna uma lista de todos os registros que coincidem com o filtro."""
         # Filtra o dicionário: mantém apenas o que é coluna no banco
         valid_filters = {k: v for k, v in filters.items() if hasattr(self.model, k)}
