@@ -22,7 +22,7 @@ def login():
         # logica de verificacao do banco de dados
         cliente_encontrado = cliente_controller.query(request.form.to_dict())
         # redirecionar para tela do sistema
-        return "Login realizado com sucesso!" if cliente_encontrado else "404"
+        return render_template("home.html") if cliente_encontrado else "404"
 
 
 @login_cadastro_bp.route("/cadastro", methods=["POST"])

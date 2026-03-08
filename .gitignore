@@ -1,6 +1,7 @@
 # directory
 __pycache__/
 .venv/
+venv/
 scripts/
 # files
 .env

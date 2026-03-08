@@ -6,6 +6,7 @@ from flask import Blueprint, Flask, render_template, request
 from flask_cors import CORS
 
 from .models import db
+
 from .routes.cliente_routes import clientes_bp
 from .routes.item_routes import itens_bp
 from .routes.pedido_routes import pedidos_bp
@@ -17,7 +18,7 @@ class App:
         # criar app
         self.app = Flask(__name__)
         # configuracoes
-        self._configurar_database(force=True)
+        self._configurar_database(force=False)
         # rotas da api
         self._configurar_rotas_bp(clientes_bp, pedidos_bp, itens_bp, url_prefix="/api")
         # rotas da aplicacao

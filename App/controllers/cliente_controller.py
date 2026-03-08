@@ -1,5 +1,6 @@
 from .base_controller import BaseController
-from ..models import Cliente
+from ..models.cliente import Cliente
+
 
 class ClienteController(BaseController):
     def __init__(self):

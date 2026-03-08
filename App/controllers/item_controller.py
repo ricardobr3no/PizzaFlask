@@ -1,5 +1,6 @@
 from .base_controller import BaseController
-from ..models import Item
+from ..models.item import Item
+
 
 class ItemController(BaseController):
     def __init__(self):
