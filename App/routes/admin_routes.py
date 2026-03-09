@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for, flash
 from ..controllers.item_controller import ItemController
 from ..controllers.pedido_controller import PedidoController
 
@@ -17,7 +17,6 @@ def dashboard():
 
     # Busca todos os itens do cardápio
     itens_db = item_ctrl.get_all()
-
     # Busca todos os pedidos (para o histórico)
     pedidos_db = pedido_ctrl.get_all()
 
@@ -38,6 +37,7 @@ def adicionar_item():
         ),  # Para simplificar, estamos usando URL de imagem em texto
     }
     item_ctrl.create(data)
+    flash("Item cadastrado com sucessop!", "success")
     return redirect(url_for("admin.dashboard"))
 
 

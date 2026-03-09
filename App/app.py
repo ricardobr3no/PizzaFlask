@@ -58,5 +58,5 @@ class App:
 
 if __name__ == "__main__":
     load_dotenv()
-    app = App(force=True)
+    app = App(force=False)
     app.run()
