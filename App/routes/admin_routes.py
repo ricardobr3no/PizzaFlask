@@ -1,4 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask_login import login_required, current_user
+
 from ..controllers.item_controller import ItemController
 from ..controllers.pedido_controller import PedidoController
 
@@ -11,6 +13,7 @@ pedido_ctrl = PedidoController()
 
 
 @admin_bp.route("/", methods=["GET"])
+@login_required
 def dashboard():
     # Aqui, no futuro, você pode colocar uma verificação para saber se
     # o usuário logado na session tem o papel de "ADMIN".
@@ -24,6 +27,7 @@ def dashboard():
 
 
 @admin_bp.route("/item/adicionar", methods=["POST"])
+@login_required
 def adicionar_item():
     # Coleta os dados do formulário HTML
     data = {
@@ -42,6 +46,7 @@ def adicionar_item():
 
 
 @admin_bp.route("/item/editar/<int:item_id>", methods=["POST"])
+@login_required
 def editar_item(item_id):
     data = {
         "nome": request.form.get("nome"),
@@ -54,6 +59,7 @@ def editar_item(item_id):
 
 
 @admin_bp.route("/item/remover/<int:item_id>", methods=["POST"])
+@login_required
 def remover_item(item_id):
     # ATENÇÃO: Se um item já estiver num pedido passado, apagar ele pode gerar
     # erro de restrição de chave estrangeira. Uma prática comum em sistemas reais

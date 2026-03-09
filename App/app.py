@@ -5,12 +5,20 @@ from dotenv import load_dotenv
 from sqlalchemy import text
 from flask import Blueprint, Flask, render_template, request
 from flask_cors import CORS
+from flask_login import LoginManager
 
 from .models import db
+from .controllers import ClienteController
+from .routes import login_cadastro_bp, home_bp, admin_bp
 
-from .routes.login_cadastro_routes import login_cadastro_bp
-from .routes.home_routes import home_bp
-from .routes.admin_routes import admin_bp
+login_manager = LoginManager()
+cliente_ctrl = ClienteController()
+
+
+@login_manager.user_loader
+def load_user(user_id: id):
+    # Esta função diz ao Flask-Login como procurar um utilizador na base de dados pelo seu ID
+    return cliente_ctrl.get_by_id(user_id)
 
 
 class App:
@@ -21,16 +29,28 @@ class App:
         self.app.secret_key = os.getenv("SECRET_KEY", "super_senha_secreta_123")
         # configuracoes
         self._configurar_database(force)
-        # rotas da aplicacao principal (Home e Login ficam na raiz)
+        # rotas da aplicacao principa (Home e Login ficam na raiz)
         self._configurar_rotas_bp(login_cadastro_bp, home_bp, url_prefix="")
         # rota do administrador (Forçamos o prefixo correto aqui)
         self._configurar_rotas_bp(admin_bp, url_prefix="/admin")
         # cofigurar cors
         CORS(self.app)
+        # inicializar login_manager
+        login_manager.init_app(self.app)
+        # Configurar para onde redirecionar utilizadores não autenticados
+        # O nome é 'nome_do_blueprint.nome_da_funcao'
+        login_manager.login_view = "login_cadastro.login"
+        login_manager.login_message = (
+            "Por favor, inicie sessão para aceder a esta página."
+        )
+        login_manager.login_message_category = "warning"
 
     def _configurar_database(self, force: bool):
         # Configura o banco de dados SQLite
-        self.app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URI", "sqlite:///project.db")
+        self.app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
+            "DATABASE_URI", "sqlite:///project.db"
+        )
+
         # Inicializa o app com a extensão do banco
         db.init_app(self.app)
         # Cria as tabelas antes da primeira requisição

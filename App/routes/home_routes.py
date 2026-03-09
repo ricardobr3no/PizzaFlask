@@ -1,14 +1,18 @@
-from flask import request, render_template, Blueprint, session, redirect, url_for, flash
 from datetime import datetime
+
+from flask import request, render_template, Blueprint, session, redirect, url_for, flash
+from flask_login import login_required, current_user
 
 from ..models import db
 from ..models.pedido import Status
-from ..models.item_pedido import ItemPedido
 
 # Importando os seus Controllers!
-from ..controllers.cliente_controller import ClienteController
-from ..controllers.item_controller import ItemController
-from ..controllers.pedido_controller import PedidoController
+from ..controllers import (
+    ClienteController,
+    ItemController,
+    PedidoController,
+    ItemPedidoController,
+)
 
 home_bp = Blueprint("home", __name__)
 
@@ -16,24 +20,19 @@ home_bp = Blueprint("home", __name__)
 cliente_ctrl = ClienteController()
 item_ctrl = ItemController()
 pedido_ctrl = PedidoController()
+item_pedido_ctrl = ItemPedidoController()
 
 
 @home_bp.route("/home", methods=["GET"])
+@login_required
 def home():
-    # 1. AUTENTICAÇÃO: Verifica se o usuário está logado
-    if "cliente_id" not in session:
-        # Mock de login para o usuário de ID 1 (pode remover quando tiver a tela de login pronta)
-        session["cliente_id"] = 1
+    # current_user.id pega o ID do usuário autenticado pelo Flask-Login
 
-    cliente_id = session["cliente_id"]
-
-    # Usa o controller para buscar o cliente
-    cliente = cliente_ctrl.get_by_id(cliente_id)
     # 2. Busca todos os produtos do banco através do Controller
     itens_db = item_ctrl.get_all()
     # 3. Busca o carrinho usando a sua função query() do BaseController
     carrinho = pedido_ctrl.query(
-        {"cliente_id": cliente_id, "status": Status.CARRINHO.value}
+        {"cliente_id": current_user.id, "status": Status.CARRINHO.value}
     )
 
     itens_carrinho = carrinho.itens if carrinho else []
@@ -46,16 +45,15 @@ def home():
         itens_carrinho=itens_carrinho,
         total_carrinho=total_carrinho,
         quantidade_itens=quantidade_itens,
-        nome_usuario=cliente.nome if cliente else "Usuário",
+        # Usa o nome direto do objeto autenticado
+        nome_usuario=(current_user.nome if cliente else "Usuário"),
     )
 
 
 @home_bp.route("/adicionar/<int:item_id>", methods=["POST"])
+@login_required
 def adicionar_carrinho(item_id):
-    if "cliente_id" not in session:
-        return redirect(url_for("home.home"))
-
-    cliente_id = session["cliente_id"]
+    cliente_id = current_user.id
     item = item_ctrl.get_by_id(item_id)
 
     # Busca o carrinho atual ou cria um novo usando seus Controllers
@@ -68,21 +66,20 @@ def adicionar_carrinho(item_id):
         )
 
     # Verifica se o lanche já existe no carrinho para somar a quantidade
-    item_pedido = ItemPedido.query.filter_by(
-        pedido_id=carrinho.id, item_id=item.id
-    ).first()
-
+    item_pedido = item_pedido_ctrl.query({"pedido_id": carrinho.id, "item_id": item.id})
     if item_pedido:
         item_pedido.quantidade += 1
         item_pedido.subtotal = item_pedido.quantidade * item.preco
         db.session.commit()
     else:
         # Cria um novo item no pedido calculando o subtotal
-        novo_item = ItemPedido(
-            pedido_id=carrinho.id,
-            item_id=item.id,
-            quantidade=1,
-            subtotal=item.preco,
+        novo_item = item_pedido_ctrl.create(
+            {
+                "pedido_id": carrinho.id,
+                "item_id": item.id,
+                "quantidade": 1,
+                "subtotal": item.preco,
+            }
         )
         db.session.add(novo_item)
         db.session.commit()
@@ -92,14 +89,11 @@ def adicionar_carrinho(item_id):
 
 
 @home_bp.route("/remover/<int:item_pedido_id>", methods=["POST"])
-def remover_carrinho(item_pedido_id):
-    if "cliente_id" not in session:
-        return redirect(url_for("home.home"))
-
-    item_pedido = ItemPedido.query.get_or_404(item_pedido_id)
-
+@login_required
+def remover_carrinho(item_pedido_id: int):
+    item_pedido = item_pedido_ctrl.get_by_id(item_pedido_id)
     # Segurança: garante que o usuário só pode apagar itens do próprio pedido
-    if item_pedido.pedido.cliente_id == session["cliente_id"]:
+    if item_pedido.pedido.cliente_id == current_user.id:
         db.session.delete(item_pedido)
         db.session.commit()
 
@@ -107,11 +101,9 @@ def remover_carrinho(item_pedido_id):
 
 
 @home_bp.route("/finalizar_pedido", methods=["POST"])
+@login_required
 def finalizar_pedido():
-    if "cliente_id" not in session:
-        return redirect(url_for("home.home"))
-
-    cliente_id = session["cliente_id"]
+    cliente_id = current_user.id
     carrinho = pedido_ctrl.query(
         {"cliente_id": cliente_id, "status": Status.CARRINHO.value}
     )

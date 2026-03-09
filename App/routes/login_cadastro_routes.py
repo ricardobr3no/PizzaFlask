@@ -1,5 +1,7 @@
 from flask import Blueprint, jsonify, request, render_template, url_for, redirect
 from ..controllers.cliente_controller import ClienteController
+from flask_login import login_required, current_user, logout_user, login_user
+from werkzeug.security import generate_password_hash, check_password_hash
 
 # criamos blueprint para login
 login_cadastro_bp = Blueprint("login_cadastro", __name__)
@@ -38,11 +40,21 @@ def login():
 @login_cadastro_bp.route("/cadastro", methods=["POST"])
 def cadastro():
     # pegar dados do formulario
-    nome = request.form.get("nome")
-    email = request.form.get("email")
-    senha = request.form.get("senha")
+    dados = request.form.to_dict()
+    # criptografa senha antes de salvar no banco de dados
+    dados["senha"] = generate_password_hash(dados["senha"])
     # logica para cadastro do banco de dados
-    novo_registro = cliente_controller.create(request.form.to_dict())
-    print(request.form.to_dict())
-    # redirecionar para tela de login (talvez adicionar notificação)
+    try:
+        cliente_controller.create(dados)
+        flash("Cadastro realizado com sucesso! Faça login.", "success")
+    except Exception as e:
+        flash("Erro ao realizar cadastro. Email já pode estar em uso.", "danger")
+    # redirecionar para tela de login
+    return redirect(url_for("login_cadastro.login"))
+
+
+@login_cadastro_bp.route("/logout")
+@login_required
+def logout():
+    logout_user()
     return redirect(url_for("login_cadastro.login"))
