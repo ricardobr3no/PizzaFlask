@@ -25,13 +25,12 @@ class App:
         self._configurar_rotas_bp(login_cadastro_bp, home_bp, url_prefix="")
         # rota do administrador (Forçamos o prefixo correto aqui)
         self._configurar_rotas_bp(admin_bp, url_prefix="/admin")
-
         # cofigurar cors
         CORS(self.app)
 
     def _configurar_database(self, force: bool):
         # Configura o banco de dados SQLite
-        self.app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URI")
+        self.app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URI", "sqlite:///project.db")
         # Inicializa o app com a extensão do banco
         db.init_app(self.app)
         # Cria as tabelas antes da primeira requisição

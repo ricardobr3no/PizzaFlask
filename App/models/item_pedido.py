@@ -21,7 +21,7 @@ class ItemPedido(db.Model):
     def to_dict(self):
         return {
             "id": self.id,
-            "produto_nome": self.item.nome if self.item else "Desconhecido",
+            "item_nome": self.item.nome if self.item else "Desconhecido",
             "quantidade": self.quantidade,
             "subtotal": self.subtotal,
         }
