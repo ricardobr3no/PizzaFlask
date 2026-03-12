@@ -3,7 +3,7 @@ import os
 
 from dotenv import load_dotenv
 from sqlalchemy import text
-from flask import Blueprint, Flask, render_template, request
+from flask import Blueprint, Flask, render_template, request, send_from_directory
 from flask_cors import CORS
 from flask_login import LoginManager
 
@@ -44,6 +44,15 @@ class App:
             "Por favor, inicie sessão para aceder a esta página."
         )
         login_manager.login_message_category = "warning"
+
+        # configurar favicon
+        @self.app.route("/favicon.ico")
+        def favicon():
+            return send_from_directory(
+                os.path.join(self.app.root_path, "static", "images"),
+                "icons8-pizza-32.png",
+                mimetype="image/png",
+            )
 
     def _configurar_database(self, force: bool):
         # Configura o banco de dados SQLite
