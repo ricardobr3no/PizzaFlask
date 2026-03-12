@@ -8,7 +8,7 @@ from ..models.pedido import Status
 
 # Importando os seus Controllers!
 from ..controllers import (
-    ClienteController,
+    UserController,
     ItemController,
     PedidoController,
     ItemPedidoController,
@@ -17,7 +17,7 @@ from ..controllers import (
 home_bp = Blueprint("home", __name__)
 
 # Instanciando os controllers
-cliente_ctrl = ClienteController()
+cliente_ctrl = UserController()
 item_ctrl = ItemController()
 pedido_ctrl = PedidoController()
 item_pedido_ctrl = ItemPedidoController()
@@ -26,11 +26,9 @@ item_pedido_ctrl = ItemPedidoController()
 @home_bp.route("/home", methods=["GET"])
 @login_required
 def home():
-    # current_user.id pega o ID do usuário autenticado pelo Flask-Login
-
-    # 2. Busca todos os produtos do banco através do Controller
+    # Busca todos os produtos do banco através do Controller
     itens_db = item_ctrl.get_all()
-    # 3. Busca o carrinho usando a sua função query() do BaseController
+    # Busca o carrinho usando a sua função query() do BaseController
     carrinho = pedido_ctrl.query(
         {"cliente_id": current_user.id, "status": Status.CARRINHO.value}
     )

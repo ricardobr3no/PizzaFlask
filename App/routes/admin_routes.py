@@ -1,8 +1,8 @@
+from functools import wraps
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 
-from ..controllers.item_controller import ItemController
-from ..controllers.pedido_controller import PedidoController
+from ..controllers import ItemController, PedidoController
 
 # Definimos o prefixo "/admin" para todas as rotas deste arquivo
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
@@ -12,8 +12,31 @@ item_ctrl = ItemController()
 pedido_ctrl = PedidoController()
 
 
+# decorator
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        # 1. Verifica se o usuário está logado
+        if not current_user.is_authenticated:
+            flash("Você precisa estar logado para acessar esta página.", "warning")
+            return redirect(url_for("login_cadastro.login"))
+
+        # 2. Verifica se a role (papel) dele é ADMIN
+        # Lembrando que no seu model configuramos role = "ADMIN" ou Role.ADMIN.value
+        if current_user.role != "ADMIN":
+            # Retorna erro 403 (Proibido) ou redireciona
+            flash("Acesso negado. Área restrita para administradores.", "danger")
+            return redirect(
+                url_for("home.home")
+            )  # Mude 'home' para o nome da sua rota principal
+
+        return f(*args, **kwargs)
+
+    return decorated_function
+
+
 @admin_bp.route("/", methods=["GET"])
-@login_required
+@admin_required
 def dashboard():
     # Aqui, no futuro, você pode colocar uma verificação para saber se
     # o usuário logado na session tem o papel de "ADMIN".
@@ -27,7 +50,7 @@ def dashboard():
 
 
 @admin_bp.route("/item/adicionar", methods=["POST"])
-@login_required
+@admin_required
 def adicionar_item():
     # Coleta os dados do formulário HTML
     data = {
@@ -46,7 +69,7 @@ def adicionar_item():
 
 
 @admin_bp.route("/item/editar/<int:item_id>", methods=["POST"])
-@login_required
+@admin_required
 def editar_item(item_id):
     data = {
         "nome": request.form.get("nome"),
@@ -59,7 +82,7 @@ def editar_item(item_id):
 
 
 @admin_bp.route("/item/remover/<int:item_id>", methods=["POST"])
-@login_required
+@admin_required
 def remover_item(item_id):
     # ATENÇÃO: Se um item já estiver num pedido passado, apagar ele pode gerar
     # erro de restrição de chave estrangeira. Uma prática comum em sistemas reais

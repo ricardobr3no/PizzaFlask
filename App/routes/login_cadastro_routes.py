@@ -1,12 +1,12 @@
 from flask import Blueprint, jsonify, request, render_template, url_for, redirect
-from ..controllers.cliente_controller import ClienteController
+from ..controllers import UserController
 from flask_login import login_required, current_user, logout_user, login_user
 from werkzeug.security import generate_password_hash, check_password_hash
 
 # criamos blueprint para login
 login_cadastro_bp = Blueprint("login_cadastro", __name__)
 # Instancia o controller genérico para Client
-cliente_controller = ClienteController()
+user_controller = UserController()
 
 
 # rota inicial
@@ -21,11 +21,14 @@ def login():
         # pegar dados do formulario
         email = request.form.get("email")
         senha = request.form.get("senha")
-        # logica de verificacao do banco de dados
-        cliente_encontrado = cliente_controller.query(request.form.to_dict())
+        # logica de verificacao do banco de dados (procura usuario pelo email)
+        user_encontrado = user_controller.query({"email": email})
+        print(cliente_encontrado)
 
         # redirecionar para tela do sistema
-        if cliente_encontrado:
+        if user_encontrado:
+            print("foi")
+            login_user(user_encontrado)
             return redirect(url_for("home.home"))
         else:
             # recarregar e mostrar mensagem de erro
@@ -45,7 +48,7 @@ def cadastro():
     dados["senha"] = generate_password_hash(dados["senha"])
     # logica para cadastro do banco de dados
     try:
-        cliente_controller.create(dados)
+        user_controller.create(dados)
         flash("Cadastro realizado com sucesso! Faça login.", "success")
     except Exception as e:
         flash("Erro ao realizar cadastro. Email já pode estar em uso.", "danger")

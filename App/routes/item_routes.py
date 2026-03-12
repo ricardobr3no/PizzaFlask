@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify, request
 
 from App.routes.pedido_routes import pedido_controller
 
-from ..controllers.item_controller import ItemController
+from ..controllers import ItemController
 
 # criar blueprint para usar na rota de pedidos
 itens_bp = Blueprint("itens", __name__)
