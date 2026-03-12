@@ -44,7 +44,7 @@ def home():
         total_carrinho=total_carrinho,
         quantidade_itens=quantidade_itens,
         # Usa o nome direto do objeto autenticado
-        nome_usuario=(current_user.nome if cliente else "Usuário"),
+        nome_usuario=(current_user.nome if current_user else "Usuário"),
     )
 
 
@@ -56,11 +56,11 @@ def adicionar_carrinho(item_id):
 
     # Busca o carrinho atual ou cria um novo usando seus Controllers
     carrinho = pedido_ctrl.query(
-        {"cliente_id": cliente_id, "status": Status.CARRINHO.value}
+        {"usuario_id": cliente_id, "status": Status.CARRINHO.value}
     )
     if not carrinho:
         carrinho = pedido_ctrl.create(
-            {"cliente_id": cliente_id, "status": Status.CARRINHO.value}
+            {"usuario_id": cliente_id, "status": Status.CARRINHO.value}
         )
 
     # Verifica se o lanche já existe no carrinho para somar a quantidade
@@ -101,9 +101,8 @@ def remover_carrinho(item_pedido_id: int):
 @home_bp.route("/finalizar_pedido", methods=["POST"])
 @login_required
 def finalizar_pedido():
-    cliente_id = current_user.id
     carrinho = pedido_ctrl.query(
-        {"cliente_id": cliente_id, "status": Status.CARRINHO.value}
+        {"usuario_id": current_user.id, "status": Status.CARRINHO.value}
     )
 
     # Se tem carrinho e não está vazio, finaliza o pedido usando o Controller

@@ -1,7 +1,9 @@
 from flask import Blueprint, jsonify, request, render_template, url_for, redirect
-from ..controllers import UserController
 from flask_login import login_required, current_user, logout_user, login_user
 from werkzeug.security import generate_password_hash, check_password_hash
+
+from ..controllers import UserController
+from ..models.usuario import Role
 
 # criamos blueprint para login
 login_cadastro_bp = Blueprint("login_cadastro", __name__)
@@ -23,13 +25,16 @@ def login():
         senha = request.form.get("senha")
         # logica de verificacao do banco de dados (procura usuario pelo email)
         user_encontrado = user_controller.query({"email": email})
-        print(cliente_encontrado)
+        print("user:", user_encontrado.to_dict())
 
         # redirecionar para tela do sistema
         if user_encontrado:
             print("foi")
             login_user(user_encontrado)
-            return redirect(url_for("home.home"))
+            if user_encontrado.role == Role.CLIENTE.value:
+                return redirect(url_for("home.home"))
+            elif user_encontrado.role == Role.ADMIN.value:
+                return redirect(url_for("admin.dashboard"))
         else:
             # recarregar e mostrar mensagem de erro
             return render_template(

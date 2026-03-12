@@ -1,5 +1,6 @@
 from enum import Enum
 from . import db
+from flask_login import UserMixin
 
 
 class Role(Enum):
@@ -8,7 +9,7 @@ class Role(Enum):
     # COZINHA = "COZINHA" <- Exemplo de como seria fácil expandir no futuro
 
 
-class Usuario(db.Model):
+class Usuario(db.Model, UserMixin):
     __tablename__ = "usuario"
 
     id = db.Column(db.Integer, primary_key=True)
