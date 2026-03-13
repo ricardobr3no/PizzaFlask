@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request, render_template, url_for, redirect
+from flask import Blueprint, jsonify, request, render_template, url_for, redirect, flash
 from flask_login import login_required, current_user, logout_user, login_user
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -28,9 +28,11 @@ def login():
         print("user:", user_encontrado.to_dict())
 
         # redirecionar para tela do sistema
-        if user_encontrado:
-            print("foi")
-            login_user(user_encontrado)
+        if user_encontrado and (
+            check_password_hash(user_encontrado.senha, senha)
+            or user_encontrado.senha == senha
+        ):
+            login_user(user_encontrado)  # entrar com esse usuario
             if user_encontrado.role == Role.CLIENTE.value:
                 return redirect(url_for("home.home"))
             elif user_encontrado.role == Role.ADMIN.value:
