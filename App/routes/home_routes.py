@@ -1,7 +1,18 @@
 from datetime import datetime
 
-from flask import request, render_template, Blueprint, session, redirect, url_for, flash
+from flask import (
+    request,
+    render_template,
+    Blueprint,
+    session,
+    redirect,
+    url_for,
+    flash,
+    send_from_directory,
+)
 from flask_login import login_required, current_user
+
+from . import HandleFile
 
 from ..models import db
 from ..models.pedido import Status
@@ -118,3 +129,10 @@ def finalizar_pedido():
         flash("Seu carrinho está vazio. Adicione um lanche primeiro!", "warning")
 
     return redirect(url_for("home.home"))
+
+
+@home_bp.route("/item/imagem/<filename>")
+def exibir_imagem(filename: str):
+    print(filename)
+    # Esta função busca o arquivo na pasta 'uploads' e o envia para o navegador
+    return send_from_directory("../uploads", filename)

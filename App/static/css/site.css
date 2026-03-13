@@ -72,3 +72,8 @@ body {
   color: #000; /* Texto preto quando o botão amarelo é hover */
   background-color: #ffc107;
 }
+
+.imagem-container img {
+    max-width: 100%; /* Força a imagem a caber na largura */
+    height: auto;    /* Mantém a proporção (não distorce) */
+  }

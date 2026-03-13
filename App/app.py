@@ -73,9 +73,13 @@ class App:
             )
 
     def _configurar_database(self, force: bool):
+        # configurar pasta de uploads
+        UPLOAD_FOLDER = "uploads"
+        self.app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+        # certificar que a pasta exista
+        os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
         # Configura o banco de dados SQLite
-
         self.app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
             "DATABASE_URI", "sqlite:///project.db"
         )

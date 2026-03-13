@@ -1,7 +1,18 @@
+import os
 from functools import wraps
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import (
+    Blueprint,
+    render_template,
+    request,
+    redirect,
+    url_for,
+    flash,
+    send_from_directory,
+)
 from flask_login import login_required, current_user
+from werkzeug.utils import secure_filename
 
+from . import HandleFile
 from ..controllers import ItemController, PedidoController
 
 # Definimos o prefixo "/admin" para todas as rotas deste arquivo
@@ -53,17 +64,23 @@ def dashboard():
 @admin_required
 def adicionar_item():
     # Coleta os dados do formulário HTML
+    file_image = request.files["imagem"]
+    file_image.filename = file_image.filename.replace(
+        file_image.filename, request.form.get("nome") + ".jpg"
+    )
     data = {
         "nome": request.form.get("nome"),
         "preco": float(
             request.form.get("preco").replace(",", ".")
         ),  # Trata a vírgula do decimal
         "descricao": request.form.get("descricao"),
-        "imagem": request.form.get(
-            "imagem"
-        ),  # Para simplificar, estamos usando URL de imagem em texto
+        "imagem": HandleFile.get_secure_name(file_image),
     }
+    # faz upload do arquivo anexado
+    HandleFile.upload_file(file_image)
+    # adiciona registro no banco de dados
     item_ctrl.create(data)
+
     flash("Item cadastrado com sucessop!", "success")
     return redirect(url_for("admin.dashboard"))
 

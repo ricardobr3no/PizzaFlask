@@ -14,13 +14,14 @@
 {% block content %}
 <div class="container">
   <div class="row gap-4">
+    <!-- formulario adicionar novo item --->
     <div class="col-md-4">
       <div class="card shadow-sm">
         <div class="card-header bg-warning text-dark fw-bold">
           <i class="bi bi-plus-circle"></i> Novo Produto
         </div>
         <div class="card-body">
-          <form action="{{ url_for('admin.adicionar_item') }}" method="POST">
+          <form action="{{ url_for('admin.adicionar_item') }}" method="POST" enctype="multipart/form-data">
             <div class="mb-3">
               <label class="form-label">Nome do Produto</label>
               <input type="text" name="nome" class="form-control" required />
@@ -31,7 +32,7 @@
             </div>
             <div class="mb-3">
               <label class="form-label">URL da Imagem</label>
-              <input type="text" name="imagem" class="form-control" required />
+              <input type="file" name="imagem" class="form-control" required />
             </div>
             <div class="mb-3">
               <label class="form-label">Descrição</label>
@@ -45,6 +46,7 @@
       </div>
     </div>
 
+    <!--- cardapio --->
     <div class="col-md-7">
       <h4 class="mb-3">Cardápio Atual</h4>
       <div class="table-responsive bg-white shadow-sm p-3 rounded mb-5">
@@ -133,6 +135,7 @@
         </table>
       </div>
 
+      <!-- historico de pedidos --->
       <h4 class="mb-3">Histórico de Pedidos</h4>
       <div class="table-responsive bg-white shadow-sm p-3 rounded">
         <table class="table table-hover align-middle">
@@ -150,7 +153,7 @@
             <tr>
               <td>#{{ pedido.id }}</td>
               <td>
-                {{ pedido.cliente.nome if pedido.cliente else 'Desconhecido'
+                {{ pedido.usuario.nome if pedido.usuario else 'Desconhecido'
                 }}
               </td>
               <td>
