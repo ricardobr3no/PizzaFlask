@@ -12,8 +12,7 @@ from flask import (
 )
 from flask_login import login_required, current_user
 
-from . import HandleFile
-
+from ..utils import HandleFile
 from ..models import db
 from ..models.pedido import Status
 
@@ -135,4 +134,8 @@ def finalizar_pedido():
 def exibir_imagem(filename: str):
     print(filename)
     # Esta função busca o arquivo na pasta 'uploads' e o envia para o navegador
-    return send_from_directory("../uploads", filename)
+    return send_from_directory(
+        HandleFile.UPLOAD_FOLDER,
+        filename,
+        as_attachment=False,  # Define se abre no navegador ou baixa
+    )

@@ -12,7 +12,7 @@ from flask import (
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 
-from . import HandleFile
+from ..utils import HandleFile
 from ..controllers import ItemController, PedidoController
 
 # Definimos o prefixo "/admin" para todas as rotas deste arquivo
@@ -63,25 +63,33 @@ def dashboard():
 @admin_bp.route("/item/adicionar", methods=["POST"])
 @admin_required
 def adicionar_item():
-    # Coleta os dados do formulário HTML
-    file_image = request.files["imagem"]
-    file_image.filename = file_image.filename.replace(
-        file_image.filename, request.form.get("nome") + ".jpg"
-    )
-    data = {
-        "nome": request.form.get("nome"),
-        "preco": float(
-            request.form.get("preco").replace(",", ".")
-        ),  # Trata a vírgula do decimal
-        "descricao": request.form.get("descricao"),
-        "imagem": HandleFile.get_secure_name(file_image),
-    }
-    # faz upload do arquivo anexado
-    HandleFile.upload_file(file_image)
-    # adiciona registro no banco de dados
-    item_ctrl.create(data)
+    file_image = request.files.get("imagem")
+    nome_item = request.form.get("nome")
 
-    flash("Item cadastrado com sucessop!", "success")
+    if file_image and nome_item:
+        # Captura a extensão original do arquivo (ex: .png, .jpg)
+        extensao = os.path.splitext(file_image.filename)[1]
+
+        # Cria um novo nome seguro baseado no nome do produto
+        novo_nome = secure_filename(f"{nome_item}{extensao}")
+        file_image.filename = novo_nome
+
+        # Prepara os dados para o banco
+        data = {
+            "nome": nome_item,
+            "preco": float(request.form.get("preco").replace(",", ".")),
+            "descricao": request.form.get("descricao"),
+            "imagem": novo_nome,
+        }
+
+        # Processa o upload e salva no banco
+        HandleFile.upload_file(file_image)
+        item_ctrl.create(data)
+
+        flash("Item cadastrado com sucesso!", "success")
+    else:
+        flash("Erro: Nome ou imagem ausentes.", "danger")
+
     return redirect(url_for("admin.dashboard"))
 
 
