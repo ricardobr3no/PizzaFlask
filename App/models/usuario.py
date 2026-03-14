@@ -16,7 +16,7 @@ class Usuario(db.Model, UserMixin):
 
     nome = db.Column(db.String(80), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    senha = db.Column(db.String(40), nullable=False)
+    senha = db.Column(db.String(200), nullable=False)
 
     # Define o que esse usuário é. Por padrão, quem se cadastra é CLIENTE.
     role = db.Column(db.String(20), default=Role.CLIENTE.value)

@@ -115,12 +115,12 @@ class App:
 
     def run(self, port=None, debug=True):
 
-        self.app.run(port=5000 if not port else port, debug=debug)
+        self.app.run(port=port, debug=debug)
 
 
 if __name__ == "__main__":
 
     load_dotenv()
 
-    app = App(force=False)
+    app = App(force=True)
     app.run()
