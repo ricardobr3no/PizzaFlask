@@ -58,7 +58,7 @@ pip install -r requirements.txt
 python run.py
 
 ```
-Acesse: `http://127.0.0.1:5000`
+Acesse: `http://127.0.0.1:5000/login`
 
 ----
 ### 🔐 Acesso e Permissões
@@ -76,8 +76,7 @@ Para fins de homologação e testes das funcionalidades administrativas, utilize
 
 🛠️ Como rodar o Setup Inicial
 
-Se o seu script de inicialização do banco ainda não cria o admin automaticamente, você pode adicionar este trecho ao seu arquivo de instalação no README:
-  Popular o Banco de Dados (Opcional):
+Popular o Banco de Dados (Opcional):
 
   ```bash 
   python seed.py
