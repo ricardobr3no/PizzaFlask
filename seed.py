@@ -10,7 +10,12 @@ from app.controllers import UserController, ItemController
 from app.models import db
 from werkzeug.security import generate_password_hash, check_password_hash
 
-dados_admin = {"nome": "admin", "email": "admin@email.com", "senha": "123456"}
+dados_admin = {
+    "nome": "admin",
+    "email": "admin@email.com",
+    "senha": "123456",
+    "role": "ADMIN",
+}
 dados_admin["senha"] = generate_password_hash(dados_admin["senha"])
 
 dados_itens = [
