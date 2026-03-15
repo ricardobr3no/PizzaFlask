@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+<!----->
+{% block title %} Burguer Tech | Admin {% endblock%}
+<!----->
+{% block navbar %}
+<nav class="navbar navbar-dark bg-dark mb-4">
+  <div class="container">
+    <a class="navbar-brand brand-font" href="#">🍔 Painel Administrativo</a>
+    <a href="{{ url_for('home.home') }}" class="btn btn-outline-light btn-sm">Ir para a Loja</a>
+  </div>
+</nav>
+{% endblock %}
+<!---content-->
+{% block content %}
+<div class="container">
+  <div class="row gap-4">
+    <!-- formulario adicionar novo item --->
+    <div class="col-md-4">
+      <div class="card shadow-sm">
+        <div class="card-header bg-warning text-dark fw-bold">
+          <i class="bi bi-plus-circle"></i> Novo Produto
+        </div>
+        <div class="card-body">
+          <form action="{{ url_for('admin.adicionar_item') }}" method="POST" enctype="multipart/form-data">
+            <div class="mb-3">
+              <label class="form-label">Nome do Produto</label>
+              <input type="text" name="nome" class="form-control" required />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Preço (R$)</label>
+              <input type="text" name="preco" class="form-control" placeholder="Ex: 35.50" required />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">URL da Imagem</label>
+              <input type="file" name="imagem" class="form-control" required />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Descrição</label>
+              <textarea name="descricao" class="form-control" rows="3" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-success w-100">
+              Salvar Produto
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!--- cardapio --->
+    <div class="col-md-7">
+      <h4 class="mb-3">Cardápio Atual</h4>
+      <div class="table-responsive bg-white shadow-sm p-3 rounded mb-5">
+        <table class="table table-hover align-middle">
+          <thead class="table-dark">
+            <tr>
+              <th>ID</th>
+              <th>Nome</th>
+              <th>Preço</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in itens %}
+            <tr>
+              <td>{{ item.id }}</td>
+              <td>{{ item.nome }}</td>
+              <td>R$ {{ "%.2f"|format(item.preco)|replace('.', ',') }}</td>
+              <td>
+
+                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                  data-bs-target="#editModal{{ item.id }}">
+                  <i class="bi bi-pencil"></i>
+                </button>
+
+                <form action="{{ url_for('admin.remover_item', item_id=item.id) }}" method="POST" class="d-inline"
+                  onsubmit="return confirm('Tem certeza que deseja excluir?');">
+                  <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
+                </form>
+              </td>
+            </tr>
+
+            <!---Modal para atualizar item-->
+            <div class="modal fade" id="editModal{{ item.id }}" tabindex="-1"
+              aria-labelledby="editModalLabel{{ item.id }}" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+
+                  <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="editModalLabel{{ item.id }}">Editar Produto: {{ item.nome }}</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                      aria-label="Close"></button>
+                  </div>
+
+                  <form action="{{ url_for('admin.editar_item', item_id=item.id) }}" method="POST">
+                    <div class="modal-body text-start text-dark">
+
+                      <div class="mb-3">
+                        <label class="form-label text-black ">Nome do Produto</label>
+                        <input type="text" name="nome" class="form-control" value="{{ item.nome }}" required>
+                      </div>
+
+                      <div class="mb-3">
+                        <label class="form-label text-black ">Preço (R$)</label>
+                        <input type="text" name="preco" class="form-control" value="{{ "
+                          %.2f"|format(item.preco)|replace('.', ',' ) }}" required>
+                      </div>
+
+                      <div class="mb-3">
+                        <label class="form-label text-black ">URL da Imagem</label>
+                        <input type="text" name="imagem" class="form-control" value="{{ item.imagem }}" required>
+                      </div>
+
+                      <div class="mb-3">
+                        <label class="form-label text-black ">Descrição</label>
+                        <textarea name="descricao" class="form-control" rows="3" required>{{ item.descricao
+                          }}</textarea>
+                      </div>
+
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                      <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                    </div>
+                  </form>
+
+                </div>
+              </div>
+            </div>
+            {% else %}
+            <tr>
+              <td colspan="4" class="text-center">Nenhum produto cadastrado.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- historico de pedidos --->
+      <h4 class="mb-3">Histórico de Pedidos</h4>
+      <div class="table-responsive bg-white shadow-sm p-3 rounded">
+        <table class="table table-hover align-middle">
+          <thead class="table-secondary">
+            <tr>
+              <th>Pedido</th>
+              <th>Cliente</th>
+              <th>Status</th>
+              <th>Data</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for pedido in pedidos %} {% if pedido.status != "CARRINHO" %}
+            <tr>
+              <td>#{{ pedido.id }}</td>
+              <td>
+                {{ pedido.usuario.nome if pedido.usuario else 'Desconhecido'
+                }}
+              </td>
+              <td>
+                <span class="badge bg-info">{{ pedido.status }}</span>
+              </td>
+              <td>
+                {{ pedido.data.strftime('%d/%m/%Y %H:%M') if pedido.data
+                else '-' }}
+              </td>
+              <td>
+                R$ {{ "%.2f"|format( pedido.itens|sum(attribute='subtotal')
+                )|replace('.', ',') }}
+              </td>
+            </tr>
+            {% endif %} {% else %}
+            <tr>
+              <td colspan="5" class="text-center">
+                Nenhum pedido finalizado.
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

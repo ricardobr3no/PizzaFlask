@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+<!----->
+{% block title %} Burguer Tech | Cardápio {% endblock%}
+<!----->
+{% block navbar %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-secondary shadow-sm sticky-top">
+  <div class="container">
+    <a class="navbar-brand brand-font m-0" href="#" style="font-size: 2rem">BURGER TECH</a>
+    <div class="d-flex align-items-center">
+      <span class="me-3 d-none d-md-inline text-light small">Olá, {{ nome_usuario }}!</span>
+
+      <button class="btn btn-outline-warning position-relative me-2" type="button" data-bs-toggle="offcanvas"
+        data-bs-target="#carrinhoLateral" aria-controls="carrinhoLateral">
+        <i class="bi bi-cart3"></i>
+        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+          {{ itens_carrinho|length }}
+        </span>
+      </button>
+      <!--botao de sair-->
+      <a href="{{ url_for('login_cadastro.logout') }}" class="btn btn-outline-danger btn-sm">
+        <i class="bi bi-box-arrow-right"></i> Sair
+      </a>
+    </div>
+  </div>
+</nav>
+{% endblock %}
+<!----->
+{% block content %}
+<div class="container my-5">
+  <div class="text-center mb-5">
+    <h2 class="brand-font" style="font-size: 3rem">Nosso Cardápio</h2>
+    <p class="text-secondary">Escolha os componentes para montar sua fome!</p>
+  </div>
+
+  <div class="row g-4">
+    <!--lista de produtos-->
+    {% for item in itens %}
+    <div class="col-12 col-md-6 col-lg-4">
+      <div class="card product-card h-100 p-3 shadow">
+        <div class="bg-dark rounded mb-3 d-flex align-items-center justify-content-center border border-secondary img-container"
+          style="height: 300px;">
+          <img src="{{ url_for('home.exibir_imagem', filename=item.imagem) }}" alt="alt do item" class="card-img  border rounded img-container object-fit-cover">
+        </div>
+        <div class="card-body p-0 d-flex flex-column">
+          <h5 class="card-title text-warning fw-bold">{{ item.nome }}</h5>
+          <p class="card-text small text-light flex-grow-1">{{ item.descricao }}</p>
+
+          <!--- button -->
+          <form action="{{ url_for('home.adicionar_carrinho', item_id=item.id) }}" method="POST">
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                <h4 class="m-0">R$ {{ "%.2f"|format(item.preco)|replace('.', ',') }}</h4>
+                <button class="btn btn-warning btn-sm">Adicionar</button>
+              </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!--barra lateral-->
+<div class="offcanvas offcanvas-end bg-dark border-start border-secondary" tabindex="-1" id="carrinhoLateral"
+  aria-labelledby="carrinhoLabel">
+  <div class="offcanvas-header border-bottom border-secondary">
+    <h5 class="offcanvas-title brand-font text-warning" id="carrinhoLabel" style="font-size: 2rem">
+      Seu Carrinho
+    </h5>
+    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+
+  <div class="offcanvas-body d-flex flex-column">
+    <!--items do carrinho-->
+    {% for item_pedido in itens_carrinho %}
+    <div class="flex-grow-1">
+      <div class="cart-item d-flex justify-content-between align-items-center py-3 border-bottom border-secondary">
+        <h6 class="m-0 fw-bold">
+          {{ item_pedido.quantidade }}x {{ item_pedido.item.nome }}
+        </h6>
+      </div>
+      <div class="text-end">
+        <p class="m-0">R$ {{ item_pedido.subtotal }}</p>
+
+        <form action="{{ url_for('home.remover_carrinho', item_pedido_id=item_pedido.id) }}" method="POST"
+          class="d-inline">
+          <button type="submit" class="btn btn-link text-danger small text-decoration-none p-0 border-0 m-0">
+            Remover
+          </button>
+        </form>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!---total e finalizar-->
+  <div class="mt-4 pt-3 border-top border-secondary">
+    <div class="d-flex justify-content-between mb-3">
+      <span class="fs-5">Total:</span>
+      <span class="fs-5 fw-bold text-warning">R$ {{ "%.2f"|format(total_carrinho)|replace('.', ',') }}</span>
+    </div>
+
+    <form action="{{ url_for('home.finalizar_pedido') }}" method="POST">
+      <button type="submit" class="btn btn-warning w-100 py-2 fs-5" {% if not itens_carrinho %}disabled{% endif %}>
+        Finalizar Pedido
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}
