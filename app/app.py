@@ -1,28 +1,27 @@
 import logging
 import os
-
 from functools import wraps
 
-
 from dotenv import load_dotenv
-
-from sqlalchemy import text
-
 from flask import (
     Blueprint,
     Flask,
+    redirect,
     render_template,
     request,
     send_from_directory,
+    url_for,
 )
-
 from flask_cors import CORS
-
 from flask_login import LoginManager, current_user
+from sqlalchemy import text
 
-from .models import db
 from .controllers import UserController
-from .routes import login_cadastro_bp, home_bp, admin_bp
+from .models import db
+from .models.usuario import Role
+from .routes import admin_bp, home_bp, login_cadastro_bp
+
+load_dotenv()
 
 login_manager = LoginManager()
 cliente_ctrl = UserController()
@@ -35,7 +34,6 @@ def load_user(user_id: id):
 
 
 class App:
-
     def __init__(self, force=False) -> None:
 
         # criar app
@@ -72,6 +70,15 @@ class App:
                 mimetype="image/png",
             )
 
+        # rota raiz: redireciona para login se não houver sessão, caso contrário para o home
+        @self.app.route("/")
+        def index():
+            if current_user.is_authenticated:
+                if current_user.role == Role.ADMIN.value:
+                    return redirect(url_for("admin.dashboard"))
+                return redirect(url_for("home.home"))
+            return redirect(url_for("login_cadastro.login"))
+
     def _configurar_database(self, force: bool):
         # configurar pasta de uploads
         UPLOAD_FOLDER = "uploads"
@@ -88,33 +95,24 @@ class App:
         db.init_app(self.app)
 
         # Cria as tabelas antes da primeira requisição
-
         with self.app.app_context():
-
             if force:
-
                 # apaga todas as tabelas
-
                 logging.warning("Resetando as tabelas (force=True)...")
                 db.drop_all()
                 db.session.commit()
 
             # criar tabelas
-
             logging.warning("Criando tabelas...")
             db.create_all()
             db.session.commit()
 
     def _configurar_rotas_bp(self, *rotas_bp: Blueprint, url_prefix=""):
-
         # adiciona blueprint das rotas
-
         for rota_bp in rotas_bp:
-
             self.app.register_blueprint(rota_bp, url_prefix=url_prefix)
 
     def run(self, port=None, debug=True):
-
         self.app.run(port=port, debug=debug)
 
     def get_app(self) -> Flask:
@@ -122,7 +120,6 @@ class App:
 
 
 if __name__ == "__main__":
-
     load_dotenv()
 
     app = App(force=True)

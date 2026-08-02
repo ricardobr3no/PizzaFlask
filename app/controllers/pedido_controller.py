@@ -24,10 +24,12 @@ class PedidoController(BaseController):
 
         try:
             # 3. Criar a relação Item-Pedido
+            quantidade = data.get("quantidade", 1)  # Padrão 1 se não enviado
             novo_item_pedido = ItemPedido(
                 pedido_id=pedido_id,
                 item_id=item.id,
-                quantidade=data.get("quantidade", 1),  # Padrão 1 se não enviado
+                quantidade=quantidade,
+                subtotal=item.preco * quantidade,
             )
 
             self.db.session.add(novo_item_pedido)

@@ -25,7 +25,8 @@ def login():
         senha = request.form.get("senha")
         # logica de verificacao do banco de dados (procura usuario pelo email)
         user_encontrado = user_controller.query({"email": email})
-        print("user:", user_encontrado.to_dict())
+        if user_encontrado:
+            print("user:", user_encontrado.to_dict())
 
         # redirecionar para tela do sistema
         if user_encontrado and check_password_hash(user_encontrado.senha, senha):

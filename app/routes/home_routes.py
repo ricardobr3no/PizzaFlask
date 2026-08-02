@@ -40,7 +40,7 @@ def home():
     itens_db = item_ctrl.get_all()
     # Busca o carrinho usando a sua função query() do BaseController
     carrinho = pedido_ctrl.query(
-        {"cliente_id": current_user.id, "status": Status.CARRINHO.value}
+        {"usuario_id": current_user.id, "status": Status.CARRINHO.value}
     )
 
     itens_carrinho = carrinho.itens if carrinho else []
@@ -101,7 +101,7 @@ def adicionar_carrinho(item_id):
 def remover_carrinho(item_pedido_id: int):
     item_pedido = item_pedido_ctrl.get_by_id(item_pedido_id)
     # Segurança: garante que o usuário só pode apagar itens do próprio pedido
-    if item_pedido.pedido.cliente_id == current_user.id:
+    if item_pedido.pedido.usuario_id == current_user.id:
         db.session.delete(item_pedido)
         db.session.commit()
 
