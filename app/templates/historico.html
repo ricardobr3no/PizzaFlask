@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+<!----->
+{% block title %} Burguer Tech | Meus Pedidos {% endblock%}
+<!----->
+{% block navbar %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-secondary shadow-sm sticky-top">
+  <div class="container">
+    <a class="navbar-brand brand-font m-0" href="#" style="font-size: 2rem">BURGER TECH</a>
+    <div class="d-flex align-items-center">
+      <span class="me-3 d-none d-md-inline text-light small">Olá, {{ nome_usuario }}!</span>
+
+      <a href="{{ url_for('home.home') }}" class="btn btn-outline-warning btn-sm me-2">
+        <i class="bi bi-bag"></i> Cardápio
+      </a>
+
+      <a href="{{ url_for('login_cadastro.logout') }}" class="btn btn-outline-danger btn-sm">
+        <i class="bi bi-box-arrow-right"></i> Sair
+      </a>
+    </div>
+  </div>
+</nav>
+{% endblock %}
+<!----->
+{% block content %}
+<div class="container my-5">
+  <div class="text-center mb-5">
+    <h2 class="brand-font" style="font-size: 3rem">Meus Pedidos</h2>
+    <p class="text-secondary">Acompanhe o histórico e o status dos seus pedidos.</p>
+  </div>
+
+  {% if pedidos %}
+  <div class="row justify-content-center">
+    <div class="col-md-10">
+      {% for pedido in pedidos %}
+      <div class="card bg-dark border-secondary shadow-sm mb-4">
+        <div class="card-header bg-secondary bg-opacity-25 d-flex justify-content-between align-items-center">
+          <span class="fw-bold">Pedido #{{ pedido.id }}</span>
+          <span class="small text-light">{{ pedido.data.strftime('%d/%m/%Y %H:%M') if pedido.data else '-' }}</span>
+        </div>
+        <div class="card-body">
+          <ul class="list-group list-group-flush bg-transparent mb-3">
+            {% for item_pedido in pedido.itens %}
+            <li class="list-group-item bg-transparent text-light d-flex justify-content-between px-0">
+              <span>{{ item_pedido.quantidade }}x {{ item_pedido.item.nome }}</span>
+              <span>R$ {{ "%.2f"|format(item_pedido.subtotal)|replace('.', ',') }}</span>
+            </li>
+            {% endfor %}
+          </ul>
+
+          <div class="d-flex justify-content-between align-items-center">
+            {% if pedido.status == "DISPONIVEL" %}
+            <span class="badge bg-info">{{ pedido.status }}</span>
+            {% elif pedido.status == "FAZENDO" %}
+            <span class="badge bg-warning text-dark">{{ pedido.status }}</span>
+            {% else %}
+            <span class="badge bg-success">{{ pedido.status }}</span>
+            {% endif %}
+
+            <span class="fs-5 fw-bold text-warning">
+              Total: R$ {{ "%.2f"|format(pedido.itens|sum(attribute='subtotal'))|replace('.', ',') }}
+            </span>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% else %}
+  <div class="text-center text-secondary">
+    <i class="bi bi-inbox display-1 d-block mb-3"></i>
+    <p>Você ainda não finalizou nenhum pedido.</p>
+    <a href="{{ url_for('home.home') }}" class="btn btn-warning">Ir para o Cardápio</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

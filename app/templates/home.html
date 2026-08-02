@@ -9,6 +9,10 @@
     <div class="d-flex align-items-center">
       <span class="me-3 d-none d-md-inline text-light small">Olá, {{ nome_usuario }}!</span>
 
+      <a href="{{ url_for('home.historico') }}" class="btn btn-outline-light btn-sm me-2">
+        <i class="bi bi-clock-history"></i> Meus Pedidos
+      </a>
+
       <button class="btn btn-outline-warning position-relative me-2" type="button" data-bs-toggle="offcanvas"
         data-bs-target="#carrinhoLateral" aria-controls="carrinhoLateral">
         <i class="bi bi-cart3"></i>

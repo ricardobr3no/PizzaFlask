@@ -58,6 +58,23 @@ def home():
     )
 
 
+@home_bp.route("/historico", methods=["GET"])
+@login_required
+def historico():
+    # Busca todos os pedidos do cliente, exceto o carrinho atual
+    pedidos = pedido_ctrl.query_all({"usuario_id": current_user.id})
+    pedidos_finalizados = [
+        p for p in pedidos if p.status != Status.CARRINHO.value
+    ]
+    pedidos_finalizados.sort(key=lambda p: p.data or datetime.min, reverse=True)
+
+    return render_template(
+        "historico.html",
+        pedidos=pedidos_finalizados,
+        nome_usuario=(current_user.nome if current_user else "Usuário"),
+    )
+
+
 @home_bp.route("/adicionar/<int:item_id>", methods=["POST"])
 @login_required
 def adicionar_carrinho(item_id):
